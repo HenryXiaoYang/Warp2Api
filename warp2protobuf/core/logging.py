@@ -7,6 +7,7 @@ Provides comprehensive logging with file rotation and console output.
 """
 import logging
 import os
+import pathlib
 import shutil
 from datetime import datetime
 from logging.handlers import RotatingFileHandler
@@ -15,12 +16,14 @@ from ..config.settings import LOGS_DIR
 
 def backup_existing_log():
     """Backup existing log file with timestamp"""
-    log_file = LOGS_DIR / 'warp_api.log'
+    #log_file = LOGS_DIR / 'warp_api.log'
+    log_file = pathlib.Path('warp_api.log')
 
     if log_file.exists():
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         backup_name = f'warp_api_{timestamp}.log'
-        backup_path = LOGS_DIR / backup_name
+        #backup_path = LOGS_DIR / backup_name
+        backup_path = backup_name
 
         try:
             shutil.move(str(log_file), str(backup_path))
@@ -31,7 +34,7 @@ def backup_existing_log():
 
 def setup_logging():
     """Configure comprehensive logging system"""
-    LOGS_DIR.mkdir(exist_ok=True)
+    # LOGS_DIR.mkdir(exist_ok=True)
 
     backup_existing_log()
     
@@ -42,7 +45,8 @@ def setup_logging():
         logger.removeHandler(handler)
     
     file_handler = RotatingFileHandler(
-        LOGS_DIR / 'warp_api.log',
+        # LOGS_DIR / 'warp_api.log',
+        'warp_api.log',
         maxBytes=10*1024*1024,
         backupCount=5,
         encoding='utf-8'
@@ -76,7 +80,8 @@ def log(*a):
 def set_log_file(log_file_name: str) -> None:
     """Reconfigure the global logger to write to a specific log file."""
     try:
-        LOGS_DIR.mkdir(exist_ok=True)
+        pass
+        #LOGS_DIR.mkdir(exist_ok=True)
     except Exception:
         pass
 
@@ -94,7 +99,8 @@ def set_log_file(log_file_name: str) -> None:
             pass
 
     file_handler = RotatingFileHandler(
-        LOGS_DIR / log_file_name,
+        #LOGS_DIR / log_file_name,
+        log_file_name,
         maxBytes=10*1024*1024,
         backupCount=5,
         encoding='utf-8'
@@ -116,6 +122,7 @@ def set_log_file(log_file_name: str) -> None:
     logger = target_logger
 
     try:
-        logger.info(f"Logging redirected to: {LOGS_DIR / log_file_name}")
+       #logger.info(f"Logging redirected to: {LOGS_DIR / log_file_name}")
+       logger.info(f"Logging redirected to: { log_file_name}")
     except Exception:
         pass 
